@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>質問まとめciao</title>
+</head>
+<body>
+
+    <h1>質問まとめciao</h1>
+
+    <p>この企業で気になることはありますか？</p>
+
+    <!-- 質問を追加するフォーム -->
+    <form action="/questions" method="POST">
+        <input
+            type="text"
+            name="question"
+            placeholder="質問を入力してください"
+            required
+        >
+        <button type="submit">質問を追加</button>
+    </form>
+
+    <h2>質問一覧</h2>
+
+    {% if questions %}
+        <ul>
+            {% for question in questions %}
+                <li>
+                    <!-- 質問の編集フォーム -->
+                    <form
+                        action="{{ url_for('edit_question', index=loop.index0) }}"
+                        method="POST"
+                        style="display:inline;"
+                    >
+                        <input
+                            type="text"
+                            name="question"
+                            value="{{ question }}"
+                            required
+                        >
+                        <button type="submit">変更</button>
+                    </form>
+
+                    <!-- 個別削除ボタン -->
+                    <form
+                        action="{{ url_for('delete_question', index=loop.index0) }}"
+                        method="POST"
+                        style="display:inline;"
+                    >
+                        <button type="submit">削除</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <!-- 全削除ボタン -->
+        <form action="/delete_all" method="POST">
+            <button type="submit">すべて削除</button>
+        </form>
+
+    {% else %}
+        <p>まだ質問はありません。</p>
+    {% endif %}
+
+    <hr>
+
+    <!-- AIでグループ分けするフォーム -->
+    <form action="/group" method="POST">
+        <button type="submit">AIでグループ分け</button>
+    </form>
+
+    <!-- AIの分類結果 -->
+    {% if groups is defined %}
+        <h2>グループ分け結果</h2>
+
+        {% for group in groups %}
+            <h3>{{ group.name }}</h3>
+
+            <ul>
+                {% for question in group.questions %}
+                    <li>{{ question }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    {% endif %}
+
+</body>
+</html>
